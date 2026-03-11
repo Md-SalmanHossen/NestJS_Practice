@@ -9,35 +9,26 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import * as postInterface from './interfaces/post.interface';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostExistsPipe } from './pipes/post-exists.pipes';
+import { Post as PostEntity } from './entities/post.entities';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findALl(@Query('search') search?: string): postInterface.Post[] {
-    const extractAllPosts = this.postsService.findAll();
-
-    if (search) {
-      return extractAllPosts.filter((singlePost) =>
-        singlePost.title.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-
-    return extractAllPosts;
+  async findAll(): Promise<PostEntity[]> {
+    return this.postsService.findAll();
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @Param('id', ParseIntPipe, PostExistsPipe) id: number,
-  ): postInterface.Post {
+  ): Promise<PostEntity> {
     return this.postsService.findOne(id);
   }
 
@@ -50,22 +41,24 @@ export class PostsController {
   //     forbidNonWhitelisted: true,
   //   }),
   // )
-  create(@Body() createPostData: CreatePostDto): postInterface.Post {
+  async create(@Body() createPostData: CreatePostDto): Promise<PostEntity> {
     return this.postsService.create(createPostData);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe, PostExistsPipe) id: number,
     @Body()
     updatePostData: UpdatePostDto, //Partial<Omit<postInterface.Post, 'id' | 'createdAt'>>,
-  ): postInterface.Post {
+  ): Promise<PostEntity> {
     return this.postsService.update(id, updatePostData);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseIntPipe, PostExistsPipe) id: number): void {
-    this.postsService.remove(id);
+  async remove(
+    @Param('id', ParseIntPipe, PostExistsPipe) id: number,
+  ): Promise<void> {
+    return this.postsService.remove(id);
   }
 }
