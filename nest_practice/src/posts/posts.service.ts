@@ -9,11 +9,12 @@ import { UpdatePostDto } from './dto/update-post.dto';
 export class PostsService {
   constructor(
     @InjectRepository(Post)
-    private postRepository: Repository<Post>,
+    private readonly postRepository: Repository<Post>,
   ) {}
 
   async findAll(): Promise<Post[]> {
-    return await this.postRepository.find();
+    const findAllPosts = await this.postRepository.find();
+    return findAllPosts;
   }
 
   async findOne(id: number): Promise<Post> {
@@ -35,11 +36,14 @@ export class PostsService {
     // });
 
     const newPost = this.postRepository.create(createPostData);
-    return await this.postRepository.save(newPost);
+    return this.postRepository.save(newPost);
   }
-
+  
   async update(id: number, updatePostData: UpdatePostDto): Promise<Post> {
     const findPostToUpdate = await this.findOne(id);
+    if (!findPostToUpdate) {
+      throw new NotFoundException(`Post with Id ${id} not found`);
+    }
 
     // if (updatePostData.title) {
     //   findPostToUpdate.title = updatePostData.title;
@@ -60,7 +64,9 @@ export class PostsService {
   }
 
   async remove(id: number): Promise<void> {
-    const findPostToDelete = await this.findOne(id);
-    await this.postRepository.remove(findPostToDelete);
+    const findPostToDelete = await this.postRepository.delete(id);
+    if (findPostToDelete.affected === 0) {
+      throw new NotFoundException(`Post with Id ${id} not found`);
+    }
   }
 }

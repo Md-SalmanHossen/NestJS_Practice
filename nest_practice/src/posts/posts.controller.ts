@@ -56,9 +56,7 @@ export class PostsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(
-    @Param('id', ParseIntPipe, PostExistsPipe) id: number,
-  ): Promise<void> {
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.postsService.remove(id);
   }
 }
