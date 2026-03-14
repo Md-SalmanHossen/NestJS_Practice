@@ -12,7 +12,6 @@ export enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
 }
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -20,15 +19,14 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+  
+  @Column()
+  name: string;
 
   @Column()
   password: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER,
-  })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
   @OneToMany(() => Post, (post) => post.authorName)

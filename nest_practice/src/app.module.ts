@@ -6,6 +6,7 @@ import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './posts/entities/post.entities';
 import { AuthModule } from './auth/auth.module';
+import { User } from './auth/entities/user.entities';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AuthModule } from './auth/auth.module';
       username: 'postgres',
       password: 'salman29',
       database: 'nestjs_practice',
-      entities: [Post],
+      entities: [Post, User],
       synchronize: true, //Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
     }),
     PostsModule,
